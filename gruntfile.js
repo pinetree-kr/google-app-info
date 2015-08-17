@@ -83,12 +83,22 @@ module.exports = function(grunt) {
 			}
 		},
 		nodemon: {
+			/*/
 			dev: {
 				script: 'server.js',
 				options: {
 					nodeArgs: ['--debug'],
 					ext: 'js,html',
 					watch: watchFiles.serverViews.concat(watchFiles.serverJS)
+				}
+			},
+			/**/
+			production:{
+				script: 'server.js',
+				options:{
+					ext: 'js,html',
+					watch: watchFiles.serverViews.concat(watchFiles.serverJS),
+					ignore:['node_modules/**']
 				}
 			}
 		},
@@ -114,6 +124,7 @@ module.exports = function(grunt) {
 		},
 		concurrent: {
 			default: ['nodemon', 'watch'],
+ 		  server: ['nodemon'],
 			debug: ['nodemon', 'watch', 'node-inspector'],
 			options: {
 				logConcurrentOutput: true,
@@ -126,6 +137,10 @@ module.exports = function(grunt) {
 			},
 			secure: {
 				NODE_ENV: 'secure'
+			},
+			production:{
+				NODE_ENV: 'production',
+				DB_PORT_27017_TCP_ADDR: 'admin:jhsong85@localhost'
 			}
 		},
 		mochaTest: {
@@ -159,6 +174,9 @@ module.exports = function(grunt) {
 
 	// Default task(s).
 	grunt.registerTask('default', ['lint', 'concurrent:default']);
+	
+	// server
+	grunt.registerTask('server', ['env:production','concurrent:server']);
 
 	// Debug task.
 	grunt.registerTask('debug', ['lint', 'concurrent:debug']);

@@ -1,4 +1,8 @@
 'use strict';
+
+//process.env.NODE_ENV='production';
+//process.env.DB_PORT_27017_TCP_ADDR='admin:jhsong85@localhost';
+
 /**
  * Module dependencies.
  */
