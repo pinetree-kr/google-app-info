@@ -3,8 +3,11 @@
 // Init the application configuration module for AngularJS application
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
-	var applicationModuleName = 'google-app-info';
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngAnimate',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils'];
+	var applicationModuleName = 'SeedLauncher';
+	var applicationModuleVendorDependencies = [
+		'ngResource','ngCookies','ngAnimate',
+		'ngTouch',  'ngSanitize',  'ui.router',
+		'ui.bootstrap', 'ui.utils'];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {
@@ -273,18 +276,18 @@ angular.module('gai').config(['$stateProvider',
 		$stateProvider.
 		state('gai', {
 			url: '/gai',
-			templateUrl: 'modules/gai/views/googleappinfo.client.view.html'
+			templateUrl: 'modules/gai/views/gai.client.view.html'
 		});
 	}
 ])
 .run(['Menus', function(Menus){
-	Menus.addMenuItem('topbar', 'GoogleApp Info.', 'gai', 'item', '/gai');
+	Menus.addMenuItem('topbar', 'Google App Info.', 'gai', 'item', '/gai');
 }])
 ;
 'use strict';
 
-angular.module('gai').controller('GoogleAppInfoController', ['$scope', '$http',
-	function($scope, $http) {
+angular.module('gai').controller('GAIController', ['$scope', '$http', 'Apps',
+	function($scope, $http, Apps) {
 		$scope.submit = function(form){
 			if(form.$valid){
 				getAppInfo();
@@ -292,27 +295,28 @@ angular.module('gai').controller('GoogleAppInfoController', ['$scope', '$http',
 		};
 		$scope.package = {};
 		$scope.packages = [];
-
+		
 		var getAppInfo = function(){
-			$http.get('/gai/'+$scope.pkgName)
-			.success(function(data){
+			Apps.get({
+				package:$scope.pkgName,
+			},function(data){
 				$scope.package = data;
-			})
-			.error(function(err){
+			},function(err){
 				$scope.package = {};
 			});
 		};
 
 		var getApps = function(){
-			$http.get('/gai')
-			.success(function(data){
-				console.log(data);
+			Apps.getAll({
+				page:1,
+				per_page:2
+			},function(data){
 				$scope.packages = data;
-			})
-			.error(function(err){
+			},function(err){
 				$scope.packages = [];
 			});
 		};
+		getApps();
 	}
 ]);
 'use strict';
@@ -324,22 +328,51 @@ angular.module('gai')
 			return !angular.equals({}, input);
 		};
 	}
-);
+)
+.filter('timeFormat',
+	function(){
+		return function(input){
+			return moment(input).format('YYYY년 MM월 DD');
+		};
+	}
+)
+;
 'use strict';
 
-angular.module('gai').factory('Gai', [
-	function() {
-		// Gai service logic
-		// ...
-
-		// Public API
+angular.module('gai').factory('GAIService', ['$http',
+	function($http) {
 		return {
-			someMethod: function() {
-				return true;
+			getAll: function(options){
+				var page = options.page || 1;
+				var per_page = options.per_page || 5;
+				return $http.get('/gai', {
+					page: page,
+					per_page: per_page
+				});
+			},
+			get: function(packageName){
+				return $http.get('/gai/'+packageName);
 			}
 		};
 	}
-]);
+])
+.factory('Apps',['$resource',
+	function($resource){
+		return $resource('/gai/:package', {
+			package: '@package'
+		}, {
+			getAll: {
+				method: 'GET',
+				isArray: true
+			},
+			get: {
+				method: 'GET',
+				isArray: false
+			}
+		});
+	}
+])
+	;
 'use strict';
 
 // Config HTTP Error Handling
