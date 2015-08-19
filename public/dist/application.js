@@ -48,7 +48,7 @@ ApplicationConfiguration.registerModule('core');
 'use strict';
 
 // Use application configuration module to register a new module
-ApplicationConfiguration.registerModule('googleAppInfo');
+ApplicationConfiguration.registerModule('gai');
 
 'use strict';
 
@@ -267,23 +267,23 @@ angular.module('core').service('Menus', [
 'use strict';
 
 //Setting up route
-angular.module('google-app-info').config(['$stateProvider',
+angular.module('gai').config(['$stateProvider',
 	function($stateProvider, TEST) {
 		// Google app info state routing
 		$stateProvider.
-		state('google-app-info', {
-			url: '/google-app-info',
-			templateUrl: 'modules/google-app-info/views/googleappinfo.client.view.html'
+		state('gai', {
+			url: '/gai',
+			templateUrl: 'modules/gai/views/googleappinfo.client.view.html'
 		});
 	}
 ])
 .run(['Menus', function(Menus){
-	Menus.addMenuItem('topbar', 'App Info.', 'google-app-info', 'item', '/google-app-info');
+	Menus.addMenuItem('topbar', 'GoogleApp Info.', 'gai', 'item', '/gai');
 }])
 ;
 'use strict';
 
-angular.module('google-app-info').controller('GoogleAppInfoController', ['$scope', '$http',
+angular.module('gai').controller('GoogleAppInfoController', ['$scope', '$http',
 	function($scope, $http) {
 		$scope.submit = function(form){
 			if(form.$valid){
@@ -291,6 +291,7 @@ angular.module('google-app-info').controller('GoogleAppInfoController', ['$scope
 			}
 		};
 		$scope.package = {};
+		$scope.packages = [];
 
 		var getAppInfo = function(){
 			$http.get('/gai/'+$scope.pkgName)
@@ -301,18 +302,44 @@ angular.module('google-app-info').controller('GoogleAppInfoController', ['$scope
 				$scope.package = {};
 			});
 		};
+
+		var getApps = function(){
+			$http.get('/gai')
+			.success(function(data){
+				console.log(data);
+				$scope.packages = data;
+			})
+			.error(function(err){
+				$scope.packages = [];
+			});
+		};
 	}
 ]);
 'use strict';
 
-angular.module('google-app-info')
-.filter('checkEmptyObject', 
+angular.module('gai')
+.filter('checkEmptyObject',
 	function() {
 		return function(input) {
 			return !angular.equals({}, input);
 		};
 	}
 );
+'use strict';
+
+angular.module('gai').factory('Gai', [
+	function() {
+		// Gai service logic
+		// ...
+
+		// Public API
+		return {
+			someMethod: function() {
+				return true;
+			}
+		};
+	}
+]);
 'use strict';
 
 // Config HTTP Error Handling
