@@ -122,7 +122,7 @@ module.exports = function(grunt) {
 		},
 		concurrent: {
 			default: ['nodemon', 'watch'],
- 		  server: ['nodemon'],
+ 		  server: ['nodemon:production'],
  		  debug: ['nodemon', 'watch', 'node-inspector'],
 			options: {
 				logConcurrentOutput: true,
@@ -138,11 +138,11 @@ module.exports = function(grunt) {
 			},
 			production:{
 				NODE_ENV: 'production',
-				DB_PORT_27017_TCP_ADDR: 'localhost'
+				DB_PORT_27017_TCP_ADDR: 'admin:jhsong85@localhost'
 			},
 			debug:{
 				NODE_ENV: 'development',
-				DB_PORT_27017_TCP_ADDR: 'localhost'
+				DB_PORT_27017_TCP_ADDR: 'admin:jhsong85@localhost'
 			}
 		},
 		mochaTest: {

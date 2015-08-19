@@ -50,11 +50,6 @@ angular.element(document).ready(function() {
 ApplicationConfiguration.registerModule('core');
 'use strict';
 
-// Use application configuration module to register a new module
-ApplicationConfiguration.registerModule('gai');
-
-'use strict';
-
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');
 'use strict';
@@ -267,112 +262,6 @@ angular.module('core').service('Menus', [
 		this.addMenu('topbar', true);
 	}
 ]);
-'use strict';
-
-//Setting up route
-angular.module('gai').config(['$stateProvider',
-	function($stateProvider, TEST) {
-		// Google app info state routing
-		$stateProvider.
-		state('gai', {
-			url: '/gai',
-			templateUrl: 'modules/gai/views/gai.client.view.html'
-		});
-	}
-])
-.run(['Menus', function(Menus){
-	Menus.addMenuItem('topbar', 'Google App Info.', 'gai', 'item', '/gai');
-}])
-;
-'use strict';
-
-angular.module('gai').controller('GAIController', ['$scope', '$http', 'Apps',
-	function($scope, $http, Apps) {
-		$scope.submit = function(form){
-			if(form.$valid){
-				getAppInfo();
-			}
-		};
-		$scope.package = {};
-		$scope.packages = [];
-		
-		var getAppInfo = function(){
-			Apps.get({
-				package:$scope.pkgName,
-			},function(data){
-				$scope.package = data;
-			},function(err){
-				$scope.package = {};
-			});
-		};
-
-		var getApps = function(){
-			Apps.getAll({
-				page:1,
-				per_page:2
-			},function(data){
-				$scope.packages = data;
-			},function(err){
-				$scope.packages = [];
-			});
-		};
-		getApps();
-	}
-]);
-'use strict';
-
-angular.module('gai')
-.filter('checkEmptyObject',
-	function() {
-		return function(input) {
-			return !angular.equals({}, input);
-		};
-	}
-)
-.filter('timeFormat',
-	function(){
-		return function(input){
-			return moment(input).format('YYYY년 MM월 DD');
-		};
-	}
-)
-;
-'use strict';
-
-angular.module('gai').factory('GAIService', ['$http',
-	function($http) {
-		return {
-			getAll: function(options){
-				var page = options.page || 1;
-				var per_page = options.per_page || 5;
-				return $http.get('/gai', {
-					page: page,
-					per_page: per_page
-				});
-			},
-			get: function(packageName){
-				return $http.get('/gai/'+packageName);
-			}
-		};
-	}
-])
-.factory('Apps',['$resource',
-	function($resource){
-		return $resource('/gai/:package', {
-			package: '@package'
-		}, {
-			getAll: {
-				method: 'GET',
-				isArray: true
-			},
-			get: {
-				method: 'GET',
-				isArray: false
-			}
-		});
-	}
-])
-	;
 'use strict';
 
 // Config HTTP Error Handling
