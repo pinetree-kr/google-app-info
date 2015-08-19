@@ -1,0 +1,37 @@
+<section data-ng-controller="GAIController">
+	<br/>
+	<div class="panel panel-primary">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-6">
+          Get App information from Google Play
+        </div>
+        <div class="col-md-6">
+          <form class="form" name="form" ng-submit="submit(form)">
+            <div class="input-group">
+              <input type="text" ng-model="pkgName" class="form-control" placeholder="Search for..." required/>
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">GET!</button>
+              </span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div ng-if="package|checkEmptyObject">
+        <img ng-src="{{package.img_url}}"/>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-info" ng-repeat="app in packages">
+    <div class="panel-heading">
+      {{app.name}} <span>(<i>{{app.packageName}}</i>)</span>
+    </div>
+    <div class="panel-body">
+      개발: {{app.author}}<br/>
+      카테고리 : {{app.genre}}<br/>
+      업데이트 : {{app.updated|timeFormat}}
+    </div>
+  </div>
+</section>
